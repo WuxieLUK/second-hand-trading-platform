@@ -399,6 +399,11 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Override
     public List<GoodsVO> ragSearch(String query) {
+        // 未配置 Embedding 服务时直接降级为关键字搜索
+        if (!QwenEmbeddingUtil.isConfigured()) {
+            log.warn("未配置 DASHSCOPE_API_KEY，RAG 检索降级为关键字搜索");
+            return fallbackSearch(query);
+        }
         try {
             if (query == null || query.trim().isEmpty()) {
                 return new ArrayList<>();
@@ -441,9 +446,24 @@ public class GoodsServiceImpl implements GoodsService {
             }
             return goodsList;
         } catch (Exception e) {
-            log.error("RAG搜索异常，查询词：{}", query, e);
-            throw new RuntimeException("RAG搜索异常", e);
+            // 向量检索链路异常（如 Milvus 未启动）时降级为关键字搜索，保证搜索功能可用
+            log.warn("RAG 向量检索异常（查询词：{}），降级为关键字搜索：{}", query, e.getMessage());
+            return fallbackSearch(query);
         }
+    }
+
+    /**
+     * RAG 降级策略：按商品名称关键字模糊搜索在售商品
+     */
+    private List<GoodsVO> fallbackSearch(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+        GoodsQueryDTO queryDTO = new GoodsQueryDTO();
+        queryDTO.setGoodsName(query.trim());
+        queryDTO.setGoodsStatus(GoodsStatusEnum.ON_SALE.getCode());
+        PageBean<GoodsVO> pageBean = list(queryDTO);
+        return pageBean.getItems();
     }
 
     @Override

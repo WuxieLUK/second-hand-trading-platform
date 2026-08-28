@@ -20,6 +20,14 @@ public class QwenEmbeddingUtil {
     private volatile OpenAIClient openAIClient;
 
     /**
+     * 是否已配置 DashScope API Key（未配置时相关能力自动降级）
+     */
+    public static boolean isConfigured() {
+        String apiKey = System.getenv("DASHSCOPE_API_KEY");
+        return apiKey != null && !apiKey.isEmpty();
+    }
+
+    /**
      * 获取 OpenAI 客户端（懒加载）
      * 未配置环境变量 DASHSCOPE_API_KEY 时抛出明确异常
      */

@@ -38,6 +38,14 @@ public class QwenChatUtil {
     }
 
     /**
+     * 是否已配置 DashScope API Key（未配置时相关能力自动降级）
+     */
+    public static boolean isConfigured() {
+        String apiKey = System.getenv("DASHSCOPE_API_KEY");
+        return apiKey != null && !apiKey.isEmpty();
+    }
+
+    /**
      * 生成RAG搜索结果的自然语言总结
      * @param query 用户查询文本
      * @param goodsList 检索到的商品列表
@@ -46,6 +54,18 @@ public class QwenChatUtil {
     public String generateSearchSummary(String query, List<GoodsVO> goodsList) {
         if (goodsList.isEmpty()) {
             return String.format("未找到与「%s」相关的在售二手商品", query);
+        }
+
+        // 未配置 API Key 时降级：直接拼接商品信息，不调用大模型
+        if (!isConfigured()) {
+            StringBuilder sb = new StringBuilder(
+                    String.format("为您找到 %d 件与「%s」相关的商品：\n", goodsList.size(), query));
+            for (int i = 0; i < Math.min(5, goodsList.size()); i++) {
+                GoodsVO goods = goodsList.get(i);
+                sb.append(String.format("- %s：%.2f 元（%s，库存 %d 件）\n",
+                        goods.getGoodsName(), goods.getSellPrice(), goods.getIsNewName(), goods.getStock()));
+            }
+            return sb.toString();
         }
 
         // 拼接商品信息

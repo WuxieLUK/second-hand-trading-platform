@@ -10,6 +10,7 @@ import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionChunk;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@Slf4j
 public class AiServiceImpl implements AiService {
 
     // 注入商品Mapper，读取实际数据库中的商品数据
@@ -129,9 +131,10 @@ public class AiServiceImpl implements AiService {
                 });
                 sink.complete();
             } catch (Exception e) {
-                // 异常时返回友好提示
-                sink.next("😣 哎呀，我突然掉线了～要不你重新问一遍？");
-                sink.error(new RuntimeException("AI客服响应异常：" + e.getMessage()));
+                // 服务不可用时优雅降级：返回友好提示并正常结束（避免前端收到错误流）
+                log.warn("AI 对话服务暂不可用（本地 Ollama 未启动或模型未就绪），已降级提示：{}", e.getMessage());
+                sink.next("😶 AI 对话服务暂不可用（本地 Ollama 未启动或模型未就绪），请稍后再试～");
+                sink.complete();
             } finally {
                 // 确保资源释放
                 if (response != null) {
@@ -211,7 +214,12 @@ public class AiServiceImpl implements AiService {
             ChatCompletion response = client.chat().completions().create(params);
             return response.choices().get(0).message().content().orElse("");
         } catch (Exception e) {
-            throw new RuntimeException("AI生成商品描述失败：" + e.getMessage());
+            // 服务不可用时优雅降级：返回基于参数生成的模板描述，避免接口报错
+            log.warn("AI 生成商品描述服务暂不可用，返回模板描述：{}", e.getMessage());
+            return String.format(
+                    "【%s】%s好物，售价 %.2f 元。%s。商品成色良好、功能完好，支持当面验货与同城交易，可小刀，诚心要可私聊～",
+                    goodsName, newDegree, sellPrice, keywords
+            );
         }
     }
 }

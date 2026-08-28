@@ -139,6 +139,17 @@ npm run dev        # http://localhost:5173
 | `DASHSCOPE_API_KEY` | 阿里云百炼（通义千问）API Key，AI 功能必需 | 空 |
 | `app.milvus.init-enabled` | 启动时是否初始化 Milvus 商品向量集合（`--app.milvus.init-enabled=false` 跳过，适合本地无 Milvus 环境） | `true` |
 
+### 功能降级策略（未配置外部依赖时）
+
+未配置 `DASHSCOPE_API_KEY` / Ollama / Milvus 时，应用**仍可正常启动**，相关增强功能自动降级、不影响核心交易链路：
+
+| 场景 | 行为 |
+| --- | --- |
+| AI 对话（本地 Ollama 未启动） | 返回友好提示并正常结束流（不报错） |
+| AI 商品描述生成（Ollama 不可用） | 返回基于商品参数的模板描述 |
+| RAG 语义搜索（未配置 Embedding/Milvus） | 自动降级为商品名称关键字搜索 |
+| 图片上传（未配置 `IMAGE_UPLOAD_TOKEN`） | 仅上传功能不可用，其余不受影响 |
+
 > 说明：出于安全考虑，所有密钥均通过环境变量注入（`application.yml` 中使用 `${VAR:默认值}` 占位），仓库中不提交任何真实凭据。
 
 ## 🧪 测试与验证
