@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.mapper.CommentMapper">
+<!--    <cache eviction="LRU" flushInterval="60000" size="1024" readOnly="true"/>-->
+    <select id="list" resultType="org.example.goods.POJO.Comment">
+        select * from comment
+        <where>
+            <!-- 核心：article_id改为goods_id -->
+            <if test="goodsId != null">
+                goods_id = #{goodsId}
+            </if>
+            <if test="nickname != null">
+                and nickname like '%${nickname}%'
+            </if>
+        </where>
+    </select>
+
+    <select id="commentallListByUserId" resultType="org.example.goods.POJO.Comment">
+        SELECT
+            c.id ,
+            c.goods_id ,
+            c.content ,
+            c.create_time ,
+            -- 评论人信息（脱敏，仅展示昵称/头像）
+            c.nickname,
+            c.user_url,
+            c.like_count
+        FROM
+            comment c
+                -- 关联商品表：筛选当前用户（卖家）发布的商品
+                INNER JOIN goods g ON c.goods_id = g.id
+                -- 关联用户表：获取评论人信息（关键修正：评论人ID字段需从comment表找对应字段）
+                LEFT JOIN user u ON c.comment_user_id = u.id -- 核心：替换为comment表关联评论人的实际字段
+        WHERE
+            -- 核心条件：商品的卖家ID = 传入的用户ID
+            g.seller_id = #{userId}
+        -- 排序：最新评论在前
+        ORDER BY
+            c.create_time DESC
+    </select>
+</mapper>

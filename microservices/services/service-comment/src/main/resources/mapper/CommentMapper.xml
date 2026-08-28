@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.comment.mapper.CommentMapper">
+
+    <select id="list" resultType="org.example.goods.POJO.Comment">
+        select * from comment
+        <where>
+            <if test="goodsId != null">
+                goods_id = #{goodsId}
+            </if>
+            <if test="content != null and content != ''">
+                and content like concat('%', #{content}, '%')
+            </if>
+            <if test="username != null and username != ''">
+                and nickname like concat('%', #{username}, '%')
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="commentallListByUserId" resultType="org.example.goods.POJO.Comment">
+        SELECT
+            c.id,
+            c.goods_id,
+            c.content,
+            c.create_time,
+            c.nickname,
+            c.user_url,
+            c.like_count
+        FROM comment c
+        INNER JOIN goods g ON c.goods_id = g.id
+        WHERE g.seller_id = #{userId}
+        ORDER BY c.create_time DESC
+    </select>
+</mapper>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.order.mapper.OrderMapper">
+
+    <select id="list" resultType="org.example.order.VO.OrderVO">
+        SELECT
+        o.id,
+        o.order_no AS orderNo,
+        u1.nickname AS buyerNickname,
+        o.buyer_id AS buyerId,
+        u1.user_pic AS buyerPic,
+        o.seller_id AS sellerId,
+        u2.nickname AS sellerNickname,
+        o.address_id AS addressId,
+        u2.user_pic AS sellerPic,
+        o.goods_id AS goodsId,
+        o.goods_name AS goodsName,
+        o.goods_pic AS goodsPic,
+        o.goods_price AS goodsPrice,
+        o.goods_num AS goodsNum,
+        o.total_amount AS totalAmount,
+        o.order_status AS orderStatus,
+        o.pay_type AS payType,
+        o.refund_status AS refundStatus,
+        o.refund_amount AS refundAmount,
+        o.refund_reason AS refundReason,
+        o.create_time AS createTime,
+        o.update_time AS updateTime
+        FROM order_info o
+        LEFT JOIN user u1 ON o.buyer_id = u1.id
+        LEFT JOIN user u2 ON o.seller_id = u2.id
+        <where>
+            <if test="orderNo != null and orderNo != ''">
+                AND o.order_no LIKE CONCAT('%', #{orderNo}, '%')
+            </if>
+            <if test="buyerId != null">
+                AND o.buyer_id = #{buyerId}
+            </if>
+            <if test="sellerId != null">
+                AND o.seller_id = #{sellerId}
+            </if>
+            <if test="goodsId != null">
+                AND o.goods_id = #{goodsId}
+            </if>
+            <if test="orderStatus != null">
+                AND o.order_status = #{orderStatus}
+            </if>
+            <if test="refundStatus != null">
+                AND o.refund_status = #{refundStatus}
+            </if>
+        </where>
+        ORDER BY o.create_time DESC
+    </select>
+
+    <select id="findById" resultType="org.example.order.POJO.OrderInfo">
+        SELECT
+        id,
+        order_no AS orderNo,
+        buyer_id AS buyerId,
+        seller_id AS sellerId,
+        goods_id AS goodsId,
+        goods_name AS goodsName,
+        goods_pic AS goodsPic,
+        goods_price AS goodsPrice,
+        address_id AS addressId,
+        goods_num AS goodsNum,
+        total_amount AS totalAmount,
+        order_status AS orderStatus,
+        pay_type AS payType,
+        pay_time AS payTime,
+        delivery_time AS deliveryTime,
+        receive_time AS receiveTime,
+        cancel_time AS cancelTime,
+        remark,
+        refund_status AS refundStatus,
+        refund_amount AS refundAmount,
+        refund_reason AS refundReason,
+        refund_time AS refundTime,
+        refund_remark AS refundRemark,
+        create_time AS createTime,
+        update_time AS updateTime
+        FROM order_info
+        WHERE id = #{id}
+    </select>
+
+    <select id="findLatestByGoodsId" resultType="org.example.order.POJO.OrderInfo">
+        SELECT
+        id,
+        order_no AS orderNo,
+        buyer_id AS buyerId,
+        seller_id AS sellerId,
+        goods_id AS goodsId,
+        goods_name AS goodsName,
+        goods_pic AS goodsPic,
+        goods_price AS goodsPrice,
+        address_id AS addressId,
+        goods_num AS goodsNum,
+        total_amount AS totalAmount,
+        order_status AS orderStatus,
+        pay_type AS payType,
+        pay_time AS payTime,
+        delivery_time AS deliveryTime,
+        receive_time AS receiveTime,
+        cancel_time AS cancelTime,
+        remark,
+        refund_status AS refundStatus,
+        refund_amount AS refundAmount,
+        refund_reason AS refundReason,
+        refund_time AS refundTime,
+        refund_remark AS refundRemark,
+        create_time AS createTime,
+        update_time AS updateTime
+        FROM order_info
+        WHERE goods_id = #{goodsId}
+        ORDER BY update_time DESC, id DESC
+        LIMIT 1
+    </select>
+</mapper>

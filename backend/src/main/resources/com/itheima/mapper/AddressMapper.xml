@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.mapper.AddressMapper">
+
+    <!-- 地址列表查询SQL -->
+    <select id="list" parameterType="com.itheima.DTO.AddressQueryDTO" resultType="com.itheima.vo.AddressVO">
+        SELECT
+        a.id,
+        a.address_name,
+        CONCAT(a.province, a.city, a.district, a.detail_addr) AS fullAddress,
+        a.is_default,
+        a.create_time,
+        a.update_time
+        FROM address a
+        <where>
+            <!-- 关联用户ID（必选）若无则查询全部的用户地址 -->
+            <if test="userId != null">
+                a.user_id = #{userId}
+            </if>
+            <!-- 地址名称模糊查询 -->
+            <if test="addressName != null and addressName != ''">
+                AND a.address_name LIKE CONCAT('%', #{addressName}, '%')
+            </if>
+        </where>
+        ORDER BY a.is_default DESC, a.create_time DESC
+    </select>
+
+</mapper>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.mapper.OrderMapper">
+
+    <!-- 订单列表查询基础字段（含退款字段） -->
+    <sql id="OrderVO_Base_Column">
+        oi.id,
+        oi.order_no,
+        oi.goods_id,
+        oi.goods_name,
+        oi.goods_pic,
+        oi.goods_price,
+        oi.goods_num,
+        oi.total_amount,
+        oi.order_status,
+        oi.pay_type,
+        oi.refund_status,
+        oi.refund_amount,
+        oi.create_time,
+        oi.update_time,
+        u1.nickname as buyerNickname,
+        u2.nickname as sellerNickname
+    </sql>
+
+    <!-- 分页查询订单列表（含退款状态筛选） -->
+    <select id="list" resultType="com.itheima.vo.OrderVO">
+        SELECT
+        o.id,
+        o.order_no as orderNo,
+        u1.nickname as buyerNickname,   -- 买家昵称
+        o.buyer_id as buyerId,
+        u1.user_pic as buyerPic,
+        o.seller_id as sellerId,
+        u2.nickname as sellerNickname,  -- 卖家昵称
+        o.address_id as addressId,
+        u2.user_pic as sellerPic,
+        o.goods_id as goodsId,
+        o.goods_name as goodsName,
+        o.goods_pic as goodsPic,
+        o.goods_price as goodsPrice,
+        o.goods_num as goodsNum,
+        o.total_amount as totalAmount,
+        o.order_status as orderStatus,
+        o.pay_type as payType,
+        o.refund_status as refundStatus,  -- 退款状态
+        o.refund_amount as refundAmount,  -- 退款金额
+        o.refund_reason as refundReason,
+        o.create_time as createTime,
+        o.update_time as updateTime
+        FROM order_info o
+        LEFT JOIN user u1 ON o.buyer_id = u1.id  -- 关联买家表取昵称
+        LEFT JOIN user u2 ON o.seller_id = u2.id -- 关联卖家表取昵称
+        <where>
+            <if test="orderNo != null and orderNo != ''">
+                AND o.order_no LIKE CONCAT('%', #{orderNo}, '%')
+            </if>
+            <if test="buyerId != null">
+                AND o.buyer_id = #{buyerId}
+            </if>
+            <if test="sellerId != null">
+                AND o.seller_id = #{sellerId}
+            </if>
+            <if test="goodsId != null">
+                AND o.goods_id = #{goodsId}
+            </if>
+            <if test="orderStatus != null">
+                AND o.order_status = #{orderStatus}
+            </if>
+            <if test="refundStatus != null">
+                AND o.refund_status = #{refundStatus}
+            </if>
+            <if test="startTime != null">
+                AND o.create_time >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND o.create_time &lt;= #{endTime}
+            </if>
+        </where>
+        ORDER BY o.create_time DESC
+    </select>
+
+
+    <!-- 订单详情查询 - 匹配 OrderDetailVO 字段 -->
+    <select id="findById" resultType="com.itheima.pojo.OrderInfo">
+        SELECT
+            id,
+            order_no as orderNo,
+            buyer_id as buyerId,
+            seller_id as sellerId,
+            goods_id as goodsId,
+            goods_name as goodsName,
+            goods_pic as goodsPic,
+            goods_price as goodsPrice,
+            address_id as addressId,
+            goods_num as goodsNum,
+            total_amount as totalAmount,
+            order_status as orderStatus,
+            pay_type as payType,
+            pay_time as payTime,
+            delivery_time as deliveryTime,
+            receive_time as receiveTime,
+            cancel_time as cancelTime,
+            remark,
+            refund_status as refundStatus,    -- 退款状态
+            refund_amount as refundAmount,    -- 退款金额
+            refund_reason as refundReason,    -- 退款原因
+            refund_time as refundTime,        -- 退款时间
+            refund_remark as refundRemark,    -- 退款备注
+            create_time as createTime,
+            update_time as updateTime
+        FROM order_info
+        WHERE id = #{id}
+    </select>
+
+</mapper>

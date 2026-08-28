@@ -1,0 +1,53 @@
+# ===== Java / Maven 构建产物 =====
+target/
+out/
+*.class
+*.jar
+*.war
+*.ear
+!mvnw
+!mvnw.cmd
+hs_err_pid*.log
+dependency-reduced-pom.xml
+
+# ===== Node / 前端 =====
+node_modules/
+dist/
+dist-ssr/
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+vite-dev.log
+.vite/
+
+# ===== IDE / 编辑器 =====
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.settings/
+.classpath
+.project
+.factorypath
+*.code-workspace
+
+# ===== 日志与运行时数据 =====
+logs/
+*.log
+dump.rdb
+*.dumpstream
+*.dump
+
+# ===== 操作系统 =====
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ===== 环境变量 / 敏感信息（密钥请通过环境变量注入）=====
+.env
+.env.local
+.env.*.local
+application-local.yml

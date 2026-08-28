@@ -1,0 +1,86 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #ffffff;
+  --text: #1f1f1f;
+  --muted: #8f8f8f;
+  --nav-bg: rgb(255, 255, 255);
+  --card-bg: #ecf0f4;
+  --border: rgba(0, 0, 0, 0.08);
+  --accent: #824af1;
+  --shadow: rgba(0, 0, 0, 0.1);
+  --wave1: rgba(236, 240, 244, 0.78);
+  --wave2: rgba(236, 240, 244, 0.91);
+  --notice-board-bg: url("@/assets/【哲风壁纸】兽耳娘-动漫.png");
+  --textarea-bg: url("@/assets/【哲风壁纸】二次元-兽耳娘-动漫.png");
+  --textarea-color: #ffffff;
+  --timeline: rgba(255, 255, 255, 0.08);
+  $weight: 400px;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+// 手机端背景禁止选中
+.no-select {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+
+
+/* 全局滚动条样式修改 */
+/* 滚动条轨道 */
+::-webkit-scrollbar {
+  width: 8px;
+  /* 垂直滚动条宽度 */
+  height: 8px;
+  /* 水平滚动条高度 */
+}
+
+/* 滚动条轨道背景 */
+::-webkit-scrollbar-track {
+  background: var(--card-bg);
+  border-radius: 4px;
+}
+
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb {
+  background-color: #8b8b8b;
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+/* 滚动条滑块悬停状态 */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #8b8b8b;
+}
+
+/* 滚动条两端的按钮（上下箭头） */
+::-webkit-scrollbar-button {
+  display: none;
+  /* 隐藏默认按钮 */
+}
+
+/* 解决页面角落处的样式问题 */
+::-webkit-scrollbar-corner {
+  background: linear-gradient(60deg, rgb(228, 165, 222) 0%, rgb(190, 95, 213) 100%);
+}
+
+/* 为特定容器定制滚动条（可选） */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(60deg, rgb(228, 165, 222) 0%, rgb(190, 95, 213) 100%);
+}
+

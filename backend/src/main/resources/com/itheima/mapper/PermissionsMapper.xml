@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.mapper.PermissionsMapper"><!--映射路径文件-->
+    <!--动态sql分页查询，查询频繁，故而以xml配置-->
+    <!--xml映射文件包名要与mapper一样-->
+<!--    <cache eviction="LRU" flushInterval="60000" size="1024" readOnly="true"/>-->
+    <select id="list" resultType="com.itheima.pojo.Permission">
+        select * from permissions
+        <where>
+            <if test="permissionName != null and permissionName!=''">
+                permission_name LIKE concat(#{permissionName}, '%')
+            </if>
+            <if test="permissionDescription != null and permissionDescription!=''">
+                <choose>
+                    <when test="permissionName != null and permissionName!=''">
+                        and permission_description LIKE concat(#{permissionDescription}, '%')
+                    </when>
+                    <otherwise>
+                        permission_description LIKE concat(#{permissionDescription}, '%')
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </select>
+
+    <select id="permissionRolesList" resultType="com.itheima.pojo.PermissionRoles">
+        select * from permissions_roles
+        <where>
+            <if test="roleId != null">
+                role_id = #{roleId}
+            </if>
+            <if test="permissionId != null">
+                and permission_id = #{permissionId}
+            </if>
+        </where>
+    </select>
+</mapper>
+
+        <!--xml用于存储和传输的可扩展标记语言-->

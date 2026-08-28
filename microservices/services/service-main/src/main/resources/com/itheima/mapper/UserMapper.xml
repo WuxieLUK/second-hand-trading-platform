@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.mapper.UserMapper"><!--映射路径文件-->
+    <!--动态sql分页查询，查询频繁，故而以xml配置-->
+    <!--xml映射文件包名要与mapper一样-->
+<!--    <cache eviction="LRU" flushInterval="60000" size="1024" readOnly="true"/>-->
+    <select id="userList" resultType="org.example.user.POJO.User">
+        select * from user
+        <where>
+            <if test="username != null">
+                 username= #{username}
+            </if>
+            <if test="email != null">
+                and  email= #{email}
+            </if>
+        </where>
+    </select>
+
+    <select id="findByIds" resultType="org.example.user.POJO.User">
+        SELECT * FROM user WHERE id IN
+        <foreach collection="userIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+</mapper>
+
+        <!--xml用于存储和传输的可扩展标记语言-->

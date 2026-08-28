@@ -1,0 +1,78 @@
+spring:
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origin-patterns: '*'
+            allowed-headers: '*'
+            allowed-methods: '*'
+      routes:
+        - id: order-route
+          uri: lb://service-order
+          predicates:
+            - Path=/api/order/**
+          filters:
+            - RewritePath=/api/order/?(?<segment>.*), /${segment}
+            - OnceToken=X-Response-Token,uuid
+        - id: product-route
+          uri: lb://service-product
+          predicates:
+            - Path=/api/product/**
+          filters:
+            - RewritePath=/api/product/?(?<segment>.*), /${segment}
+        - id: user-route
+          uri: lb://service-user
+          predicates:
+            - Path=/api/user/**
+          filters:
+            - RewritePath=/api/user/?(?<segment>.*), /${segment}
+        - id: comment-route
+          uri: lb://service-comment
+          predicates:
+            - Path=/api/comment/**
+          filters:
+            - RewritePath=/api/comment/?(?<segment>.*), /${segment}
+        - id: collect-route
+          uri: lb://service-collect
+          predicates:
+            - Path=/api/collect/**
+          filters:
+            - RewritePath=/api/collect/?(?<segment>.*), /${segment}
+        - id: goods-collect-route
+          uri: lb://service-collect
+          predicates:
+            - Path=/api/goodsCollect/**
+          filters:
+            - RewritePath=/api/goodsCollect/?(?<segment>.*), /${segment}
+        - id: chat-route
+          uri: lb://service-chat
+          predicates:
+            - Path=/api/chat/**
+          filters:
+            - RewritePath=/api/chat/?(?<segment>.*), /${segment}
+        - id: backAll-route
+          uri: lb://service-backAll
+          predicates:
+            - Path=/api/backAll/**
+          filters:
+            - RewritePath=/api/backAll/?(?<segment>.*), /${segment}
+        - id: bff-route
+          uri: lb://service-backAll
+          predicates:
+            - Path=/api/bff/**
+          filters:
+            - RewritePath=/api/bff/?(?<segment>.*), /${segment}
+        - id: ai-route
+          uri: lb://service-product
+          predicates:
+            - Path=/api/ai/**
+          filters:
+            - RewritePath=/api/ai/?(?<segment>.*), /ai/${segment}
+        # WebSocket 聊天路由（不走 RewritePath，直接转发）
+        - id: chat-ws-route
+          uri: lb://service-backAll
+          predicates:
+            - Path=/ws/chat/**
+      default-filters:
+        - AddResponseHeader=X-Answer,42

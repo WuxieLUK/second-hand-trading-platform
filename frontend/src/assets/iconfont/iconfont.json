@@ -1,0 +1,65 @@
+{
+  "id": "4982353",
+  "name": "iconfont",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "43418209",
+      "name": "AI-ChatData",
+      "font_class": "AI-ChatData",
+      "unicode": "e61d",
+      "unicode_decimal": 58909
+    },
+    {
+      "icon_id": "32521467",
+      "name": "像素风_火箭",
+      "font_class": "xiangsufeng_huojian",
+      "unicode": "e7d7",
+      "unicode_decimal": 59351
+    },
+    {
+      "icon_id": "2006728",
+      "name": "搜索",
+      "font_class": "sousuo",
+      "unicode": "e63b",
+      "unicode_decimal": 58939
+    },
+    {
+      "icon_id": "3742852",
+      "name": "收藏",
+      "font_class": "shoucang2",
+      "unicode": "e60a",
+      "unicode_decimal": 58890
+    },
+    {
+      "icon_id": "5150276",
+      "name": "收藏",
+      "font_class": "shoucang1",
+      "unicode": "e666",
+      "unicode_decimal": 58982
+    },
+    {
+      "icon_id": "3785207",
+      "name": "点赞",
+      "font_class": "dianzan",
+      "unicode": "e66e",
+      "unicode_decimal": 58990
+    },
+    {
+      "icon_id": "4132720",
+      "name": "收藏",
+      "font_class": "shoucang",
+      "unicode": "e651",
+      "unicode_decimal": 58961
+    },
+    {
+      "icon_id": "12037475",
+      "name": "评论",
+      "font_class": "pinglun",
+      "unicode": "e767",
+      "unicode_decimal": 59239
+    }
+  ]
+}

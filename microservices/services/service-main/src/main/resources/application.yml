@@ -1,0 +1,104 @@
+server:
+  port: 8088
+  address: 0.0.0.0 # 核心：允许局域网访问，必须加！
+  tomcat:
+    # Tomcat线程池优化
+    threads:
+      max: 200        # 最大工作线程数（默认200，根据服务器配置调整）
+      min-spare: 50   # 核心线程数
+    connection-timeout: 30000  # 连接超时时间
+    max-connections: 10000     # 最大连接数
+    accept-count: 100          # 等待队列长度
+  # 响应超时配置（解决异步请求中断）
+  servlet:
+    async:
+      timeout: 30000  # 异步请求超时时间
+
+spring:
+  application:
+    name: service-backAll
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/shop?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true # 开启批量写入优化
+    username: root
+    password: ${DB_PASSWORD:1234}
+    hikari:
+      pool-name: HikariCP-Pool
+      minimum-idle: 10          # 最小空闲连接（原5，提升避免频繁创建）
+      maximum-pool-size: 50     # 最大连接池（原20，根据QPS调整）
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-test-query: SELECT 1
+      leak-detection-threshold: 60000  # 连接泄漏检测（60秒）
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:  # 补充Redis密码（如有）
+      lettuce:
+        pool:
+          max-active: 50        # 原10，提升连接数
+          max-idle: 20          # 原10
+          max-wait: 500ms       # 原100ms，避免短时间超时
+          min-idle: 10          # 原0，保留核心连接
+        shutdown-timeout: 2000  # 关闭超时
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 109MB
+      file-size-threshold: 1MB  # 超过1MB写入磁盘，避免内存溢出
+      location: ${java.io.tmpdir}/blog/upload  # 临时文件目录
+
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+      config:
+        import-check:
+          enabled: false
+
+# mybatis优化
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+    map-underscore-to-camel-case: true
+    cache-enabled: false  # 开启MyBatis二级缓存
+    lazy-loading-enabled: true  # 懒加载
+    aggressive-lazy-loading: false
+  mapper-locations: classpath:mapper/**/*.xml
+  type-aliases-package: com.itheima.entity
+
+
+# 日志优化（解决SLF4J多绑定问题）
+logging:
+  level:
+    com.zaxxer.hikari: WARN
+    org.springframework.web: INFO
+    com.itheima.mapper: DEBUG  # 仅Mapper打印SQL，减少日志开销
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+  file:
+    name: ./logs/blog-app.log  # 使用name替代path以支持完整的logback配置
+  logback:
+    rollingpolicy:
+      max-file-size: 100MB
+      max-history: 7  # 新的配置方式替代废弃的logging.file.max-history
+
+# 第三方图床配置（token 通过环境变量 IMAGE_UPLOAD_TOKEN 注入，不提交到仓库）
+image:
+  upload:
+    url: https://picui.cn/api/v1/upload  # 上传接口
+    token: ${IMAGE_UPLOAD_TOKEN:}  # 图床 Token，不含 Bearer 前缀
+    temp-dir: E:\\screenshot
+    permission: 0
+    strategy-id: 0
+    album-id: 0
+    connect-timeout: 5000
+    read-timeout: 10000
+#默认配置
+#springdoc:
+#  api-docs:
+#    enabled: true
+#  swagger-ui:
+#    enabled: true
