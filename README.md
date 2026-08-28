@@ -137,6 +137,7 @@ npm run dev        # http://localhost:5173
 | `DB_PASSWORD` | MySQL 密码 | `1234` |
 | `IMAGE_UPLOAD_TOKEN` | 第三方图床 Token | 空 |
 | `DASHSCOPE_API_KEY` | 阿里云百炼（通义千问）API Key，AI 功能必需 | 空 |
+| `app.milvus.init-enabled` | 启动时是否初始化 Milvus 商品向量集合（`--app.milvus.init-enabled=false` 跳过，适合本地无 Milvus 环境） | `true` |
 
 > 说明：出于安全考虑，所有密钥均通过环境变量注入（`application.yml` 中使用 `${VAR:默认值}` 占位），仓库中不提交任何真实凭据。
 

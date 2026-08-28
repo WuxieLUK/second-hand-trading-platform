@@ -12,13 +12,29 @@ import java.util.List;
 @Component
 public class QwenChatUtil {
 
-    private final OpenAIClient openAIClient;
+    // OpenAI客户端（懒加载：首次使用时创建，未配置 DASHSCOPE_API_KEY 时不影响应用启动）
+    private volatile OpenAIClient openAIClient;
 
-    public QwenChatUtil() {
-        this.openAIClient = OpenAIOkHttpClient.builder()
-                .apiKey(System.getenv("DASHSCOPE_API_KEY")) // 从环境变量获取API Key
-                .baseUrl("https://dashscope.aliyuncs.com/compatible-mode/v1")
-                .build();
+    /**
+     * 获取 OpenAI 客户端（懒加载）
+     * 未配置环境变量 DASHSCOPE_API_KEY 时抛出明确异常
+     */
+    private OpenAIClient getClient() {
+        if (openAIClient == null) {
+            String apiKey = System.getenv("DASHSCOPE_API_KEY");
+            if (apiKey == null || apiKey.isEmpty()) {
+                throw new IllegalStateException("未配置环境变量 DASHSCOPE_API_KEY，无法调用通义千问服务");
+            }
+            synchronized (this) {
+                if (openAIClient == null) {
+                    this.openAIClient = OpenAIOkHttpClient.builder()
+                            .apiKey(apiKey) // 从环境变量获取API Key
+                            .baseUrl("https://dashscope.aliyuncs.com/compatible-mode/v1")
+                            .build();
+                }
+            }
+        }
+        return openAIClient;
     }
 
     /**
@@ -63,7 +79,7 @@ public class QwenChatUtil {
                 .maxTokens(200)
                 .build();
 
-        ChatCompletion response = openAIClient.chat().completions().create(params);
+        ChatCompletion response = getClient().chat().completions().create(params);
         return response.choices().get(0).message().content().orElse("抱歉，未能生成有效的回复");
 
     }
@@ -101,7 +117,7 @@ public class QwenChatUtil {
                     .maxTokens(100)
                     .build();
 
-            ChatCompletion response = openAIClient.chat().completions().create(params);
+            ChatCompletion response = getClient().chat().completions().create(params);
             String tags = response.choices().get(0).message().content().orElse("专业：未知，年级：未知，兴趣：未知");
             // 校验输出格式（防止模型乱输出）
             if (!tags.contains("专业：") || !tags.contains("年级：") || !tags.contains("兴趣：")) {

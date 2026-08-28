@@ -16,15 +16,29 @@ import java.util.List;
 @Component
 public class QwenEmbeddingUtil {
 
-    // 初始化OpenAI客户端（复用AiServiceImpl的配置方式）
-    private final OpenAIClient openAIClient;
+    // OpenAI客户端（懒加载：首次使用时创建，未配置 DASHSCOPE_API_KEY 时不影响应用启动）
+    private volatile OpenAIClient openAIClient;
 
-    // 构造方法初始化客户端
-    public QwenEmbeddingUtil() {
-        this.openAIClient = OpenAIOkHttpClient.builder()
-                .apiKey(System.getenv("DASHSCOPE_API_KEY"))
-                .baseUrl("https://dashscope.aliyuncs.com/compatible-mode/v1")
-                .build();
+    /**
+     * 获取 OpenAI 客户端（懒加载）
+     * 未配置环境变量 DASHSCOPE_API_KEY 时抛出明确异常
+     */
+    private OpenAIClient getClient() {
+        if (openAIClient == null) {
+            String apiKey = System.getenv("DASHSCOPE_API_KEY");
+            if (apiKey == null || apiKey.isEmpty()) {
+                throw new IllegalStateException("未配置环境变量 DASHSCOPE_API_KEY，无法调用通义千问 Embedding 服务");
+            }
+            synchronized (this) {
+                if (openAIClient == null) {
+                    this.openAIClient = OpenAIOkHttpClient.builder()
+                            .apiKey(apiKey)
+                            .baseUrl("https://dashscope.aliyuncs.com/compatible-mode/v1")
+                            .build();
+                }
+            }
+        }
+        return openAIClient;
     }
 
     /**
@@ -42,7 +56,7 @@ public class QwenEmbeddingUtil {
                 .build();
 
         // 2. 调用同步接口获取 Embedding 响应
-        CreateEmbeddingResponse response = openAIClient.embeddings().create(params);
+        CreateEmbeddingResponse response = getClient().embeddings().create(params);
 
         // 3. 解析响应，提取向量数据
         response.data();

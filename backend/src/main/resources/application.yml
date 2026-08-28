@@ -14,6 +14,11 @@ server:
     async:
       timeout: 30000  # 异步请求超时时间
 
+# 应用自定义配置
+app:
+  milvus:
+    init-enabled: true  # 启动时初始化 Milvus 商品向量集合；本地无 Milvus 可设为 false 跳过
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
