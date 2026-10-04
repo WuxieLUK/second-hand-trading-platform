@@ -1,5 +1,10 @@
 # 校易通 · 校园二手交易平台
 
+[![Java](https://img.shields.io/badge/Java-17-007396?logo=java&logoColor=white)](https://adoptium.net)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4-6DB33F?logo=springboot&logoColor=white)](https://spring.io)
+[![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-Alibaba-6DB33F?logo=spring&logoColor=white)](#)
+[![Vue 3](https://img.shields.io/badge/Vue-3-42B883?logo=vue.js&logoColor=white)](https://vuejs.org)
+
 > 大学生创新创业训练计划（大创）项目 · 前后端分离 · 单体架构 → 微服务架构演进 · 集成 AI 大模型能力
 
 面向高校学生的校园二手交易平台，覆盖**商品发布 / 浏览 / 上下架、订单交易、退款售后、收藏评论、即时聊天、后台审核与权限管理**的完整交易闭环；在此基础上融合 **AI 大模型对话、商品描述智能生成、校园知识图谱 + Milvus 向量检索（RAG）** 等增强能力。
